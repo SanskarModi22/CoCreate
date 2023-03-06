@@ -18,6 +18,7 @@ class AuthRepository {
   void signInWithGoogle() async {
     try {
       final user = await _googleSignIn.signIn();
+      print(user.toString());
       if (user != null) {
         print(user.email);
         print(user.displayName!);
