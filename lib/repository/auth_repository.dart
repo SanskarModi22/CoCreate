@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -64,11 +62,11 @@ class AuthController {
 
         // Send a POST request to the server to sign up the user.
         final res = await _dio.post('$host/api/signup',
-            data: jsonEncode(accUser),
+            data: accUser.toJson(),
             options: Options(headers: {
               'Content-Type': 'application/json; charset=UTF-8',
             }));
-
+        print(res);
         // Check the response status code.
         switch (res.statusCode) {
           // If the status code is 200, create a new UserModel object with the user ID
