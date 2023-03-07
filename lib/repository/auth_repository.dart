@@ -74,6 +74,7 @@ class AuthController {
           case 200:
             final newUSer = accUser.copyWith(
               uid: res.data['user']['_id'],
+              token: res.data['token'],
             );
             error = ErrorModel(error: null, data: newUSer);
             break;
