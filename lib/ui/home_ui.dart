@@ -6,6 +6,10 @@ import '../style/colors.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
+  void signOut(WidgetRef ref) {
+    ref.read(authRepositoryProvider).signOut();
+    ref.read(userProvider.notifier).update((state) => null);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () => signOut(ref),
             icon: const Icon(
               Icons.logout,
               color: kRedColor,

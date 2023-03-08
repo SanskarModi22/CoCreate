@@ -32,7 +32,7 @@ class LoginScreen extends ConsumerWidget {
       icon: Image(
         image: AssetImage("assets/images/g-logo-2.png"),
         height: 40,
-        width: 50,
+        width: 40,
       ),
       label: const Text(
         "Sign in With Google",

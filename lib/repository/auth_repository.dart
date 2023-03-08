@@ -137,4 +137,9 @@ class AuthController {
     }
     return error;
   }
+
+  void signOut() async {
+    await _googleSignIn.signOut();
+    _localStorageRepo.setTotken('');
+  }
 }
