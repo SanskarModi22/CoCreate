@@ -12,7 +12,8 @@ documentRouter.post("/doc/create", auth, async(req, res) => {
             createdAt: createdAt,
         });
         console.log(req.body);
-        document = await document.save;
+        document = await document.save();
+        // console.log(res.json({ document }));
         // console.log(req.);
         res.json({ document });
     } catch (err) {
