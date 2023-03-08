@@ -5,12 +5,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../constants/host_service.dart';
 import '../models/error_model.dart';
 import '../models/user_account.dart';
+import 'local_storage.dart';
 
 // Define a provider that creates an instance of the AuthController class.
 final authRepositoryProvider = Provider((ref) => AuthController(
-      googleSignIn: GoogleSignIn(),
-      dio: Dio(),
-    ));
+    googleSignIn: GoogleSignIn(),
+    dio: Dio(),
+    localStorageRepo: LocalStorageRepo()));
 
 // Define a provider that provides a user model.
 final userProvider = StateProvider<UserModel?>((ref) => null);
@@ -19,13 +20,15 @@ final userProvider = StateProvider<UserModel?>((ref) => null);
 class AuthController {
   final GoogleSignIn _googleSignIn;
   final Dio _dio;
-
+  final LocalStorageRepo _localStorageRepo;
   // Define the constructor for the AuthController class.
   AuthController({
     required GoogleSignIn googleSignIn,
     required Dio dio,
+    required LocalStorageRepo localStorageRepo,
   })  : _googleSignIn = googleSignIn,
-        _dio = dio;
+        _dio = dio,
+        _localStorageRepo = localStorageRepo;
   // The authRepositoryProvider is created to provide an instance of the AuthController class.
 
 // In the context of the Riverpod state management library, providers are objects that provide values to other objects that depend on them. In this case, the authRepositoryProvider is a Provider that creates and provides an instance of the AuthController class to other parts of the app that depend on it.
@@ -54,18 +57,22 @@ class AuthController {
         // Create a new UserModel object from the Google user object.
         final accUser = UserModel(
           email: user.email,
-          name: user.displayName!,
-          photoUrl: user.photoUrl!,
+          name: user.displayName ?? "",
+          photoUrl: user.photoUrl ?? "",
           uid: "",
           token: "",
         );
 
         // Send a POST request to the server to sign up the user.
-        final res = await _dio.post('$host/api/signup',
-            data: accUser.toJson(),
-            options: Options(headers: {
+        final res = await _dio.post(
+          '$host/api/signup',
+          data: accUser.toJson(),
+          options: Options(
+            headers: {
               'Content-Type': 'application/json; charset=UTF-8',
-            }));
+            },
+          ),
+        );
         print(res);
         // Check the response status code.
         switch (res.statusCode) {
@@ -76,6 +83,7 @@ class AuthController {
               uid: res.data['user']['_id'],
               token: res.data['token'],
             );
+            _localStorageRepo.setTotken(newUSer.token);
             error = ErrorModel(error: null, data: newUSer);
             break;
           // If the status code is not 200, print an error message to the console.
@@ -88,6 +96,45 @@ class AuthController {
       error = ErrorModel(error: e.toString(), data: null);
     }
     // Return the error model.
+    return error;
+  }
+
+  Future<ErrorModel> getUserData() async {
+    ErrorModel error =
+        ErrorModel(error: 'Something unexpected Happens', data: null);
+    try {
+      String? token = await _localStorageRepo.getTotken();
+      // print(token);
+      if (token != null) {
+        var res = await _dio.get(
+          '$host/',
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'x-auth-token': token,
+            },
+          ),
+        );
+        // print(res.statusCode);
+        switch (res.statusCode) {
+          case 200:
+            final newUser = UserModel(
+              email: res.data['user']['email'],
+              name: res.data['user']['name'],
+              photoUrl: res.data['user']['profilePic'],
+              uid: res.data['user']['_id'],
+              token: '',
+            ).copyWith(token: token);
+
+            error = ErrorModel(error: null, data: newUser);
+            break;
+          default:
+            print('error');
+        }
+      }
+    } catch (e) {
+      error = ErrorModel(error: e.toString(), data: null);
+    }
     return error;
   }
 }

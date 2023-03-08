@@ -19,7 +19,7 @@ class UserModel {
     return <String, dynamic>{
       'name': name,
       'email': email,
-      'photoUrl': photoUrl,
+      'profilePic': photoUrl,
       '_id': uid,
       'token': token,
     };
@@ -29,7 +29,7 @@ class UserModel {
     return UserModel(
       name: map['name'] as String,
       email: map['email'] as String,
-      photoUrl: map['photoUrl'] as String,
+      photoUrl: map['profilePic'] as String,
       uid: map['_id'] as String,
       token: map['token'] as String,
     );
