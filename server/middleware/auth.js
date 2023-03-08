@@ -6,7 +6,7 @@ const { PASSWORD_KEY } = process.env;
 const auth = async(req, res, next) => {
     try {
         // Get the authorization token from the request header.
-        const token = req.header("X-Auth-Token");
+        const token = req.header('x-auth-token');
         if (!token) {
             return res.status(401).json({ msg: "No auth token, access denied" });
         }

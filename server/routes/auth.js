@@ -8,7 +8,7 @@ const { PASSWORD_KEY } = process.env;
 authRouter.post("/api/signup", async(req, res) => {
     try {
         // Extract name, email, and photoUrl from request body
-        const { name, email, photoUrl } = req.body;
+        const { name, email, profilePic } = req.body;
 
         // Validate inputs
         if (!name || !email) {
@@ -16,7 +16,7 @@ authRouter.post("/api/signup", async(req, res) => {
         }
 
         // Find user by email and update profile or create new user if not found
-        const user = await User.findOneAndUpdate({ email }, { name, profilePic: photoUrl }, { upsert: true, new: true });
+        const user = await User.findOneAndUpdate({ email }, { name, profilePic: profilePic }, { upsert: true, new: true });
 
         // Generate JWT token with user ID and password key
         const token = jwt.sign({ id: user._id }, PASSWORD_KEY);
