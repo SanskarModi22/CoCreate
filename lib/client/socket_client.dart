@@ -1,4 +1,5 @@
 import 'package:socket_io_client/socket_io_client.dart' as io;
+
 import '../constants/host_service.dart';
 
 class SocketClient {

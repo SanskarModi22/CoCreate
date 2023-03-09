@@ -8,4 +8,12 @@ class SocketRepo {
   void joinRoom(String documentID) {
     _socketClient.emit('join', documentID);
   }
+
+  void typing(Map<String?, dynamic> data) {
+    _socketClient.emit('typing', data);
+  }
+
+  void changeListener(Function(Map<String?, dynamic>) func) {
+    _socketClient.on('changes', (data) => func(data));
+  }
 }

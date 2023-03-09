@@ -26,6 +26,10 @@ io.on("connection", (socket) => {
         socket.join(documentID);
         console.log(documentID);
         console.log("joined");
+        socket.on('typing', (data) => {
+            socket.broadcast.to(data.room).emit('changes', data);
+            console.log('joined');
+        })
     });
 });
 server.listen(PORT, "0.0.0.0", () => {
