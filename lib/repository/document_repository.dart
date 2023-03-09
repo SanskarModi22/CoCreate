@@ -21,10 +21,10 @@ class DocumentRepo {
           }),
           data: {'createdAt': DateTime.now().millisecondsSinceEpoch});
       print(res.statusCode);
-      print(res.data['document']);
+      print(res.data);
       switch (res.statusCode) {
         case 200:
-          error = ErrorModel(error: null, data: res.data['document']);
+          error = ErrorModel(error: null, data: res.data);
           break;
         default:
           print('error in document');
