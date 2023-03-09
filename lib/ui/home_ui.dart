@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routemaster/routemaster.dart';
 
+import '../models/document_model.dart';
+import '../models/error_model.dart';
 import '../repository/auth_repository.dart';
 import '../repository/document_repository.dart';
 import '../style/colors.dart';
+import 'loading_ui.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -21,10 +24,14 @@ class HomeScreen extends ConsumerWidget {
     final errorModel =
         await ref.read(documentRepositoryProvider).createDocument(token);
     if (errorModel.data != null) {
-      navigator.push('/document/${errorModel.data['_id']}');
+      navigator.push('/document/${errorModel.data.id}');
     } else {
       snackbar.showSnackBar(SnackBar(content: Text(errorModel.error!)));
     }
+  }
+
+  void navigateTODocument(BuildContext context, String documentId) {
+    Routemaster.of(context).push('/document/$documentId');
   }
 
   @override
@@ -50,7 +57,45 @@ class HomeScreen extends ConsumerWidget {
           )
         ],
       ),
-      body: Center(child: Text(ref.watch(userProvider)!.name)),
+      body: FutureBuilder<ErrorModel?>(
+          future: ref
+              .watch(documentRepositoryProvider)
+              .getDocument(ref.watch(userProvider)!.token),
+          builder: ((context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Loader();
+            }
+            return Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 20),
+                width: 600,
+                // height: 50,
+                child: ListView.builder(
+                    itemCount: snapshot.data!.data.length,
+                    itemBuilder: ((context, index) {
+                      DocumentModel document = snapshot.data!.data[index];
+                      return SizedBox(
+                        height: 50,
+                        child: InkWell(
+                          onTap: () => navigateTODocument(context, document.id),
+                          child: Card(
+                              child: Center(
+                            child: Column(
+                              children: [
+                                Text(document.title),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text('${document.createdAt}')
+                              ],
+                            ),
+                          )),
+                        ),
+                      );
+                    })),
+              ),
+            );
+          })),
     );
   }
 }
