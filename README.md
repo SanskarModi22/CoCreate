@@ -63,7 +63,7 @@ flutter run
 1. Navigate to the backend directory:
 
 ```shell
-cd backend
+cd server
 ```
 
 2. Install the Node.js dependencies:
